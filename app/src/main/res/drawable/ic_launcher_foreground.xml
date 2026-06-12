@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Center-align the generated server asset inside the adaptive icon safe space range -->
+    <item
+        android:width="66dp"
+        android:height="66dp"
+        android:drawable="@drawable/server_icon_foreground_1781235158982"
+        android:gravity="center" />
+</layer-list>

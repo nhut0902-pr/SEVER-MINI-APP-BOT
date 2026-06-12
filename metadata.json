@@ -1,0 +1,6 @@
+{
+  "name": "Android Server",
+  "description": "Biến điện thoại Android thành server mini chạy nền 24/7 với SQLite, Telegram Bot API và giao diện Material 3",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
