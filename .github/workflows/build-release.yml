@@ -4,6 +4,15 @@ on:
   push:
     tags:
       - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version_tag:
+        description: 'Version tag (VD: v1.0.1)'
+        required: true
+        default: 'v1.0.1'
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -24,28 +33,27 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Decode Keystore
-        id: decode_keystore
+      - name: Generate Release Keystore
         run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/keystore.jks
+          keytool -genkey -v -keystore app/release.keystore -alias release -keyalg RSA -keysize 2048 -validity 10000 -storepass "nhutcoder123" -keypass "nhutcoder123" -dname "CN=NhutCoder Team, OU=NhutCoder, O=NhutCoder, L=HCM, ST=HCM, C=VN"
 
       - name: Build Release APK
         run: ./gradlew assembleRelease
         env:
-          KEYSTORE_FILE: "keystore.jks"
-          KEYSTORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          KEYSTORE_FILE: "release.keystore"
+          KEYSTORE_PASSWORD: "nhutcoder123"
+          KEY_ALIAS: "release"
+          KEY_PASSWORD: "nhutcoder123"
 
       - name: Upload Release APK
         uses: softprops/action-gh-release@v1
         with:
           files: app/build/outputs/apk/release/app-release.apk
-          name: Release ${{ github.ref_name }}
+          name: Release ${{ github.event.inputs.version_tag || github.ref_name }}
+          tag_name: ${{ github.event.inputs.version_tag || github.ref_name }}
           body: |
-            ## 🎉 Tính năng mới và Khắc phục lỗi trong ${{ github.ref_name }}
+            ## 🎉 Tính năng mới và Khắc phục lỗi trong ${{ github.event.inputs.version_tag || github.ref_name }}
             
             Vui lòng xem thông tin cập nhật chi tiết ở dưới.
-            *Nhớ nhập phiên bản mới trong commit hoặc tag (VD: v1.0.1)*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
