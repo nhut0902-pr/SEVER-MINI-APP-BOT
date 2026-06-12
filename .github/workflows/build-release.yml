@@ -37,7 +37,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Decode Keystore
-        run: base64 -d debug.keystore.base64 > app/debug.keystore
+        run: base64 -d -i debug.keystore.base64 > app/debug.keystore
 
       - name: Build Release APK
         run: ./gradlew assembleRelease
@@ -68,6 +68,5 @@ jobs:
             ## 🎉 Tính năng mới và Khắc phục lỗi trong ${{ env.VERSION }}
             
             Vui lòng xem thông tin cập nhật chi tiết ở dưới.
-            - Commit: ${{ github.event.head_commit.message }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
