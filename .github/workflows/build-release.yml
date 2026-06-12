@@ -2,6 +2,9 @@ name: Build and Release Android App
 
 on:
   push:
+    branches:
+      - main
+      - master
     tags:
       - 'v*.*.*'
   workflow_dispatch:
@@ -33,27 +36,38 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Generate Release Keystore
-        run: |
-          keytool -genkey -v -keystore app/release.keystore -alias release -keyalg RSA -keysize 2048 -validity 10000 -storepass "nhutcoder123" -keypass "nhutcoder123" -dname "CN=NhutCoder Team, OU=NhutCoder, O=NhutCoder, L=HCM, ST=HCM, C=VN"
+      - name: Decode Keystore
+        run: base64 -d debug.keystore.base64 > app/debug.keystore
 
       - name: Build Release APK
         run: ./gradlew assembleRelease
         env:
-          KEYSTORE_FILE: "release.keystore"
-          KEYSTORE_PASSWORD: "nhutcoder123"
-          KEY_ALIAS: "release"
-          KEY_PASSWORD: "nhutcoder123"
+          KEYSTORE_FILE: "debug.keystore"
+          KEYSTORE_PASSWORD: "android"
+          KEY_ALIAS: "androiddebugkey"
+          KEY_PASSWORD: "android"
+
+      - name: Set Release Name
+        id: release_name
+        run: |
+          if [[ "${{ github.event_name }}" == 'workflow_dispatch' ]]; then
+            echo "VERSION=${{ github.event.inputs.version_tag }}" >> $GITHUB_ENV
+          elif [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            echo "VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=v1.0.${{ github.run_number }}" >> $GITHUB_ENV
+          fi
 
       - name: Upload Release APK
         uses: softprops/action-gh-release@v1
         with:
           files: app/build/outputs/apk/release/app-release.apk
-          name: Release ${{ github.event.inputs.version_tag || github.ref_name }}
-          tag_name: ${{ github.event.inputs.version_tag || github.ref_name }}
+          name: Release ${{ env.VERSION }}
+          tag_name: ${{ env.VERSION }}
           body: |
-            ## 🎉 Tính năng mới và Khắc phục lỗi trong ${{ github.event.inputs.version_tag || github.ref_name }}
+            ## 🎉 Tính năng mới và Khắc phục lỗi trong ${{ env.VERSION }}
             
             Vui lòng xem thông tin cập nhật chi tiết ở dưới.
+            - Commit: ${{ github.event.head_commit.message }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

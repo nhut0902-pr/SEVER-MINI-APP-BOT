@@ -19,7 +19,8 @@ import java.net.URL
 
 object AppUpdater {
 
-    private const val GITHUB_REPO = "user/NhutCoder-App" // Replace with real repo if known
+    // Please replace with your actual Github Repository path here!
+    private const val GITHUB_REPO = "nhut0902-pr/SEVER-MINI-APP-BOT" 
     private const val API_URL = "https://api.github.com/repos/$GITHUB_REPO/releases/latest"
 
     suspend fun checkForUpdate(currentVersion: String): UpdateInfo? = withContext(Dispatchers.IO) {
