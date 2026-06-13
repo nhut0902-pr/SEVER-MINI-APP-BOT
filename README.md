@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="fbbe63f1e24846bedda16a5f1d160c7a.png" width="100" style="vertical-align: middle; display: inline-block;" />
+  <img src="app/src/main/res/drawable/server_icon_foreground_1781235158982.jpg" width="100" style="vertical-align: middle; display: inline-block; border-radius: 50%;" />
   <span style="font-size: 3em; font-weight: bold; font-family: monospace; vertical-align: middle; display: inline-block; margin-left: 10px;">first-tree</span>
 </p>
 
@@ -88,5 +88,5 @@ First Tree is an open-source workspace where AI agents work from your team's sha
   <b>Powered By Nhutcoder Team</b>
   <br/>
   <br/>
-  <img src="app/src/main/res/drawable/server_icon_foreground_1781235158982.jpg" width="120" style="border-radius: 50%; box-shadow: 0 4px 8px rgba(0,0,0,0.2);" alt="Nhutcoder Team Logo"/>
+  <img src="fbbe63f1e24846bedda16a5f1d160c7a.png" width="120" alt="Nhutcoder Team Logo"/>
 </p>
