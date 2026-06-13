@@ -210,7 +210,12 @@ class ServerService : Service() {
                     var currentPythonCode = config.pythonCode
                     var currentPythonPath = config.pythonPath
                     
+                    var isFirstEmission = true
                     db.configDao().getConfigFlow().collect { updatedConfig ->
+                        if (isFirstEmission) {
+                            isFirstEmission = false
+                            return@collect
+                        }
                         if (updatedConfig != null) {
                             // Check Discord
                             if (updatedConfig.discordToken != currentDiscordToken || updatedConfig.discordChannelId != currentDiscordChannelId) {
@@ -810,7 +815,15 @@ class ServerService : Service() {
                         insertSystemLog("SYSTEM", "[Launcher]", "Bot Python dừng hoạt động. (Mã thoát: $exitVal)", if (exitVal == 0) 200 else 500)
                     }
                 } catch (e: Exception) {
-                    if (e is CancellationException) throw e
+                    val className = e.javaClass.simpleName
+                    val classFullName = e.javaClass.name
+                    if (e is CancellationException || 
+                        className.contains("Cancellation") || 
+                        classFullName.contains("Cancellation") ||
+                        e.message?.contains("cancelled") == true ||
+                        e.message?.contains("Cancellation") == true) {
+                        throw e
+                    }
                     processStarted = false
                     errorMsg = e.localizedMessage ?: "Unknown launch exception"
                 }
@@ -833,7 +846,15 @@ class ServerService : Service() {
                     }
                 }
             } catch (e: Exception) {
-                if (e is CancellationException) throw e
+                val className = e.javaClass.simpleName
+                val classFullName = e.javaClass.name
+                if (e is CancellationException || 
+                    className.contains("Cancellation") || 
+                    classFullName.contains("Cancellation") ||
+                    e.message?.contains("cancelled") == true ||
+                    e.message?.contains("Cancellation") == true) {
+                    throw e
+                }
                 e.printStackTrace()
                 val msg = e.localizedMessage ?: "Unknown error"
                 insertSystemLog("SYSTEM", "[Python Error]", "❌ Lỗi khởi chạy Bot: $msg", 500)

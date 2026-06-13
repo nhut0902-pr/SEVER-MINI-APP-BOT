@@ -1,33 +1,92 @@
-# Android Mini Server & AI Hub
-**Powered By NhutCoder Team**
+<p align="center">
+  <img src="fbbe63f1e24846bedda16a5f1d160c7a.png" width="100" style="vertical-align: middle; display: inline-block;" />
+  <span style="font-size: 3em; font-weight: bold; font-family: monospace; vertical-align: middle; display: inline-block; margin-left: 10px;">first-tree</span>
+</p>
 
-## Giới thiệu
-Android Mini Server là một ứng dụng di động mạnh mẽ cho phép bạn chạy một máy chủ thu nhỏ trực tiếp trên thiết bị Android của mình. Phiên bản hiện tại tích hợp cả Terminal mô phỏng nâng cao (cài đặt Pip, kịch bản Python) cùng với **Bộ Não AI** kết nối qua REST API tới nhiều mô hình thông minh (Gemini, OpenAI, Anthropic, DeepSeek).
+<p align="center">
+  <a href="https://ais-pre-xvn665it2vwvvagwnibajv-94278657433.asia-east1.run.app">Open App</a> · 
+  <a href="#giới-thiệu">Get Started</a> · 
+  <a href="#tính-năng-nổi-bật">How It Works</a> · 
+  <a href="#hướng-dẫn-cấu-hình">Quickstart</a> · 
+  <a href="#quy-trình-đóng-gói--cập-nhật-phiên-bản-mới">Discussions</a>
+</p>
 
-## 🚀 Tính năng nổi bật - Phiên bản v1.0.0
-- **Máy chủ HTTP Cục bộ**: Cấu hình port, token trực tiếp qua giao diện.
-- **Python & Terminal Shell**: Giao diện Termux giả lập hoạt động mượt mà, hỗ trợ lệnh sh, cài đặt `pip install`, và cảnh báo chạy script Python cục bộ.
-- **AI Hub - Bộ Não AI**: Kết nối đa nền tảng trí thông minh nhân tạo, với Stream Response mô phỏng và hỗ trợ Tokenize Logging tiên tiến.
-- **Auto Update qua GitHub Releases**: (MỚI IN v1.0.0)
-  - Ứng dụng tự động kiểm tra mỗi khi khởi chạy để phát hiện phiên bản mới từ GitHub Releases.
-  - Tích hợp thông báo UI hiển thị log (Release Notes) của phiên bản mới.
-  - Hỗ trợ tải xuống và tự động cài đặt `app-release.apk` một cách liền mạch!
+<p align="center">
+  <img src="https://img.shields.io/badge/NPM-v0.5.6-yellow?style=flat-square" alt="NPM" />
+  <img src="https://img.shields.io/badge/CI-PASSING-green?style=flat-square" alt="CI" />
+  <img src="https://img.shields.io/badge/LICENSE-APACHE%202.0-green?style=flat-square" alt="License" />
+  <img src="https://img.shields.io/badge/STARS-20-blueviolet?style=flat-square" alt="Stars" />
+</p>
 
-## 🔧 Workflow Cập Nhật Nội Bộ (Dành cho Developer)
-Ứng dụng đã được tích hợp GitHub Actions `.github/workflows/build-release.yml`.
-Để phát hành bản cập nhật Fix lỗi hoặc Thêm tính năng mới, hãy làm theo quy trình:
+<p align="center">
+  <a href="#">English</a> | <a href="#">Tiếng Việt</a>
+</p>
 
-1. **Commit code**: Với mô tả rõ ràng (VD: `Fix: Sửa lỗi hiển thị UI` hoặc `Feat: Thêm tính năng Auto Update`).
-2. **Đánh Tag phiên bản mới**: 
-   - HÃY NHỚ RẰNG MỖI LẦN CÓ BẢN FIX HAY THÊM TÍNH NĂNG MỚI HÃY GHI VERSION NHA!
-   - Sử dụng tag với định dạng `v*.*.*` (Ví dụ: `git tag v1.0.1`).
-   - Push tag lên repo: `git push origin v1.0.1`.
-3. **GitHub Actions Tự Động Hóa**:
-   - Hệ thống sẽ tự động bắt sự kiện Push Tag.
-   - Biên dịch ứng dụng (`assembleRelease`).
-   - Ký ứng dụng bằng Keystore base64 (Signed APK).
-   - Đẩy trực tiếp `app-release.apk` lên phần **Releases** với nội dung trích xuất từ tag!
+<p align="center">
+  Use this link to use <a href="https://ais-pre-xvn665it2vwvvagwnibajv-94278657433.asia-east1.run.app">first-tree 🌳</a> for free!!! — the most efficient way to loopmaxx your engineering work.
+</p>
 
-*📝 Lưu ý cho người dùng ứng dụng: Khi ứng dụng hiện thông báo "Cập nhật ngay", mọi thông tin lỗi được Fix hay Tính năng mới đều sẽ được hiển thị trên Dialog.*
+---
 
-**Đội Ngũ:** NhutCoder Team & Google AI Studio Agent.
+# First-Tree (Android Mini Server & AI Hub)
+### Context-grounded agentic work for teams.
+
+First Tree is an open-source workspace where AI agents work from your team's shared context, not isolated prompts. Turn your Android device into a 24/7 background-running server, equipped with a Python Executor & Sandboxed Pip environment, continuous Telegram/Discord bots, and local database persistence.
+
+---
+
+### 🎨 Trạng thái hoạt động (Status Badges)
+<p align="left">
+  <img src="https://img.shields.io/badge/Version-v1.0.9-brightgreen?style=flat-square" alt="Version 1.0.9" />
+  <img src="https://img.shields.io/badge/Build-Passing-green?style=flat-square" alt="Build Success" />
+  <img src="https://img.shields.io/badge/Python-3.11-yellow?style=flat-square" alt="Python 3.11" />
+  <img src="https://img.shields.io/badge/Pip_Installer-Active-orange?style=flat-square" alt="Pip Installer Active" />
+  <img src="https://img.shields.io/badge/Database-SQLite%20(Room)-red?style=flat-square" alt="SQLite/Room Database" />
+</p>
+
+---
+
+## 🚀 Tính năng nổi bật - Phiên bản v1.0.9
+
+- **Dịch vụ chạy ngầm 24/7**: Sử dụng `PowerManager` WakeLock và tính năng khởi chạy lại thông minh tránh trùng lặp tài nguyên, duy trì dịch vụ ngay cả khi khóa màn hình.
+- **Python Workspace & Terminal**:
+  - Trình soạn thảo kịch bản Python trực tuyến tiện lợi.
+  - Bộ thực thi Python nhị phân thật hoặc Sandbox giả lập (tự động chuyển đổi thông minh).
+  - **Mới:** Nút/Khung cài đặt thư viện Python (**Pip**) trực quan ngay bên dưới terminal cùng danh sách gợi ý nhanh (`requests`, `beautifulsoup4`, `pytelegrambotapi`, `discord.py`, `aiohttp`, `urllib3`).
+- **AI Hub - Trí tuệ nhân vật**: Tích hợp sẵn bộ REST API hỗ trợ streaming và tracking token cho Gemini, OpenAI, Anthropic, DeepSeek.
+- **Auto Update liền mạch qua GitHub**: Tải về và cài đặt trực tiếp file `.apk` đã được ký tự động bằng Keystore bảo mật.
+
+---
+
+## 🔧 Hướng dẫn cấu hình
+
+### Khởi chạy Server
+1. Cấu hình Cổng (Port) mong muốn (Ví dụ: `8080`).
+2. Bật Toggle khởi động máy chủ. Máy chủ sẽ bắt đầu phân phát trên địa chỉ IP Wifi hiện tại của bạn.
+
+### Sử dụng Python Pip Installer
+1. Truy cập tab **Python Notepad**.
+2. Cuộn xuống phần **Cài đặt thư viện Python (Pip)**.
+3. Nhập tên gói bất kỳ (ví dụ: `requests`) hoặc nhấp chọn một trong các gợi ý cài nhanh để hệ thống tự động tải và tích hợp vào môi trường làm việc của bạn.
+
+---
+
+## 📦 Quy trình đóng gói & Cập nhật phiên bản mới
+
+Ứng dụng sử dụng GitHub Actions tự động hóa:
+1. Thêm tag mới (ví dụ: `v1.0.9`):
+   ```bash
+   git tag v1.0.9
+   git push origin v1.0.9
+   ```
+2. Workflow sẽ tự động giải mã debug Keystore bảo mật, biên dịch phiên bản đã ký và phát hành trực tiếp lên GitHub Releases.
+
+---
+
+<p align="center">
+  <br/>
+  <b>Powered By Nhutcoder Team</b>
+  <br/>
+  <br/>
+  <img src="app/src/main/res/drawable/server_icon_foreground_1781235158982.jpg" width="120" style="border-radius: 50%; box-shadow: 0 4px 8px rgba(0,0,0,0.2);" alt="Nhutcoder Team Logo"/>
+</p>

@@ -17,6 +17,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -1148,6 +1149,108 @@ except Exception as e:
                             lineHeight = 16.sp,
                             modifier = Modifier.fillMaxWidth()
                         )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFF0E1724)
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(1.dp, Color(0xFF1F2E45), RoundedCornerShape(12.dp))
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = "📦 CÀI THƯ VIỆN PYTHON (PIP)",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFFFFB74D)
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = "Cài đặt các gói thư viện Python bổ sung vào môi trường Sandbox hoặc môi trường thật của thiết bị.",
+                        fontSize = 11.sp,
+                        color = Color.LightGray
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        OutlinedTextField(
+                            value = pipPackageName,
+                            onValueChange = { pipPackageName = it },
+                            modifier = Modifier.weight(1f),
+                            singleLine = true,
+                            placeholder = { Text("nhập tên gói...", fontSize = 12.sp, color = Color.Gray) },
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.LightGray,
+                                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                unfocusedBorderColor = Color(0xFF1A2B42)
+                            ),
+                            textStyle = androidx.compose.ui.text.TextStyle(fontFamily = FontFamily.Monospace, fontSize = 12.sp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Button(
+                            onClick = {
+                                if (pipPackageName.isNotBlank()) {
+                                    val pkgToInstall = pipPackageName.trim()
+                                    pythonConsoleLogs = ">>> Đang cài đặt thư viện '${pkgToInstall}'...\n"
+                                    coroutineScope.launch {
+                                        runPipInstall(context, pkgToInstall, pythonPathInput) { out ->
+                                            pythonConsoleLogs += out
+                                        }
+                                    }
+                                    pipPackageName = ""
+                                } else {
+                                    Toast.makeText(context, "Vui lòng nhập tên thư viện!", Toast.LENGTH_SHORT).show()
+                                }
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary
+                            )
+                        ) {
+                            Text("CÀI ĐẶT", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Text(
+                        text = "Thư viện phổ biến (nhấp để cài nhanh):",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.Gray
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        val suggestedLibs = listOf("requests", "beautifulsoup4", "pytelegrambotapi", "discord.py", "aiohttp", "urllib3")
+                        suggestedLibs.forEach { lib ->
+                            SuggestionChip(
+                                onClick = {
+                                    pythonConsoleLogs = ">>> Đang cài đặt thư viện gợi ý '${lib}'...\n"
+                                    coroutineScope.launch {
+                                        runPipInstall(context, lib, pythonPathInput) { out ->
+                                            pythonConsoleLogs += out
+                                        }
+                                    }
+                                },
+                                label = { Text(lib, fontSize = 11.sp, color = Color(0xFFFFD54F), fontFamily = FontFamily.Monospace) },
+                                colors = SuggestionChipDefaults.suggestionChipColors(
+                                    containerColor = Color(0xFF132239)
+                                )
+                            )
+                        }
                     }
                 }
             }
