@@ -7,4 +7,3 @@ plugins {
   alias(libs.plugins.secrets) apply false
 }
 
-
