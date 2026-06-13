@@ -163,7 +163,7 @@ fun DashboardScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     androidx.compose.foundation.Image(
-                        painter = androidx.compose.ui.res.painterResource(id = com.example.R.drawable.server_icon_foreground_1781235158982),
+                        painter = androidx.compose.ui.res.painterResource(id = com.example.R.drawable.ic_launcher_foreground),
                         contentDescription = "NhutCoder Team Logo",
                         modifier = Modifier.size(16.dp).clip(androidx.compose.foundation.shape.CircleShape)
                     )
