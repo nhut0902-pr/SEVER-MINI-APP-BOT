@@ -76,13 +76,14 @@ class ServerViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    fun saveAiConfig(aiProvider: String, aiApiKey: String, aiCustomEndpoint: String, aiLocalModelPath: String) {
+    fun saveAiConfig(aiProvider: String, aiApiKey: String, aiCustomEndpoint: String, aiLocalModelPath: String, aiModelName: String) {
         viewModelScope.launch {
             val updatedConfig = _configState.value.copy(
                 aiProvider = aiProvider,
                 aiApiKey = aiApiKey,
                 aiCustomEndpoint = aiCustomEndpoint,
-                aiLocalModelPath = aiLocalModelPath
+                aiLocalModelPath = aiLocalModelPath,
+                aiModelName = aiModelName
             )
             repository.saveConfig(updatedConfig)
             _configState.value = updatedConfig

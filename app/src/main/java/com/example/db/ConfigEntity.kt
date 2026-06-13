@@ -20,6 +20,7 @@ data class ConfigEntity(
     val aiApiKey: String = "",
     val aiCustomEndpoint: String = "",
     val aiLocalModelPath: String = "",
+    val aiModelName: String = "",
     
     // Python local workspace code
     val pythonCode: String = "# Viết mã Python của bạn ở đây\nprint(\"Xin chào từ Server Android Mini!\")\n",

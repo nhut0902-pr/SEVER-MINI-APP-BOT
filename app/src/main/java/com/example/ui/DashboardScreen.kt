@@ -208,8 +208,8 @@ fun DashboardScreen(
             AlertDialog(
                 onDismissRequest = { showUpdateDialog = false },
                 icon = { Icon(Icons.Default.Share, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
-                title = { Text(text = "Cập nhật ứng dụng - v\${updateInfo?.version}", fontWeight = FontWeight.Bold) },
-                text = { Text(text = "Có bản cập nhật mới:\\n\${updateInfo?.releaseNotes}\\n\\nBạn có muốn cập nhật ngay không?") },
+                title = { Text(text = "Cập nhật ứng dụng - v${updateInfo?.version}", fontWeight = FontWeight.Bold) },
+                text = { Text(text = "Có bản cập nhật mới:\n${updateInfo?.releaseNotes}\n\nBạn có muốn cập nhật ngay không?") },
                 confirmButton = {
                     Button(onClick = {
                         showUpdateDialog = false
@@ -1624,6 +1624,7 @@ fun AiBrainTabContent(
     var apiKey by remember { mutableStateOf(config.aiApiKey) }
     var customEndpoint by remember { mutableStateOf(config.aiCustomEndpoint) }
     var localModelPath by remember { mutableStateOf(config.aiLocalModelPath) }
+    var modelName by remember { mutableStateOf(config.aiModelName) }
 
     var chatPrompt by remember { mutableStateOf("") }
     val chatMessages = remember { mutableStateListOf<ChatMessage>() }
@@ -1635,6 +1636,7 @@ fun AiBrainTabContent(
         apiKey = config.aiApiKey
         customEndpoint = config.aiCustomEndpoint
         localModelPath = config.aiLocalModelPath
+        modelName = config.aiModelName
     }
 
     Column(
@@ -1699,6 +1701,53 @@ fun AiBrainTabContent(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
+                        value = modelName,
+                        onValueChange = { modelName = it },
+                        label = { Text("Tên Mô Hình / Model ID") },
+                        placeholder = {
+                            val defaultPh = when(provider) {
+                                "gemini" -> "gemini-1.5-flash"
+                                "openai" -> "gpt-4o-mini"
+                                else -> "claude-3-5-sonnet-20241022"
+                            }
+                            Text("Ví dụ: $defaultPh")
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    // Suggestions row for user's models request
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        val suggestions = when(provider) {
+                            "gemini" -> listOf("gemini-3.5-flash", "gemini-1.5-flash")
+                            "openai" -> listOf("gpt-5.5", "gpt-4o-mini")
+                            else -> listOf("claude-opus-4.8", "claude-3-5-sonnet-20241022")
+                        }
+                        suggestions.forEach { sug ->
+                            Surface(
+                                shape = RoundedCornerShape(16.dp),
+                                contentColor = if (modelName == sug) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+                                color = if (modelName == sug) MaterialTheme.colorScheme.primary else Color.Gray.copy(alpha = 0.2f),
+                                modifier = Modifier
+                                    .clickable { modelName = sug }
+                                    .padding(horizontal = 2.dp)
+                            ) {
+                                Text(
+                                    text = sug,
+                                    fontSize = 10.sp,
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    OutlinedTextField(
                         value = customEndpoint,
                         onValueChange = { customEndpoint = it },
                         label = { Text("Endpoint Proxy Tùy Chọn (nếu có)") },
@@ -1725,8 +1774,8 @@ fun AiBrainTabContent(
                 Spacer(modifier = Modifier.height(12.dp))
                 Button(
                     onClick = {
-                        viewModel.saveAiConfig(provider, apiKey, customEndpoint, localModelPath)
-                        Toast.makeText(context, "Đã lưu bộ não AI!", Toast.LENGTH_SHORT).show()
+                        viewModel.saveAiConfig(provider, apiKey, customEndpoint, localModelPath, modelName)
+                        Toast.makeText(context, "Đã lưu cấu hình bộ não AI!", Toast.LENGTH_SHORT).show()
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -1826,7 +1875,7 @@ fun AiBrainTabContent(
                             val userLogInfo = "⚡ [AI Engine] Gửi Prompt: \"$requestPrompt\" ở chế độ provider=$provider"
                             chatLogs += "\n$userLogInfo"
 
-                            val result = executeAiRequest(provider, apiKey, customEndpoint, localModelPath, requestPrompt) { log ->
+                            val result = executeAiRequest(provider, apiKey, customEndpoint, localModelPath, modelName, requestPrompt) { log ->
                                 chatLogs += "\n$log"
                             }
                             chatMessages.add(ChatMessage(result, isUser = false))
@@ -1929,6 +1978,7 @@ suspend fun executeAiRequest(
     key: String,
     endpoint: String,
     localPath: String,
+    modelName: String,
     prompt: String,
     onLog: (String) -> Unit
 ): String {
@@ -1940,8 +1990,9 @@ suspend fun executeAiRequest(
                         onLog("❌ [LỖI] Chưa nhập Gemini API Key trong tab Bộ não AI!")
                         return@withContext "Chưa có API key cấu hình cho Gemini. Vui lòng điền API key ở khung trên."
                     }
-                    onLog("[REST] Khởi tạo POST request tới generativelanguage.googleapis.com...")
-                    val result = callGeminiRestApi(key, prompt)
+                    val activeModel = modelName.ifBlank { "gemini-1.5-flash" }
+                    onLog("[REST] Khởi tạo POST request tới generativelanguage.googleapis.com (Model: $activeModel)...")
+                    val result = callGeminiRestApi(key, activeModel, prompt)
                     onLog("[REST] Phản hồi thành công từ Gemini model server!")
                     return@withContext result
                 }
@@ -1951,8 +2002,9 @@ suspend fun executeAiRequest(
                         return@withContext "Chưa có OpenAI API Key."
                     }
                     val url = endpoint.ifBlank { "https://api.openai.com/v1/chat/completions" }
-                    onLog("[REST] Kết nối chat/completions tới $url...")
-                    val result = callOpenAiRestApi(key, prompt, url)
+                    val activeModel = modelName.ifBlank { "gpt-4o-mini" }
+                    onLog("[REST] Kết nối chat/completions tới $url (Model: $activeModel)...")
+                    val result = callOpenAiRestApi(key, activeModel, prompt, url)
                     onLog("[REST] OpenAI API hoàn thành!")
                     return@withContext result
                 }
@@ -1961,8 +2013,9 @@ suspend fun executeAiRequest(
                         onLog("❌ [LỖI] Chưa nhập Anthropic API Key!")
                         return@withContext "Chưa có Anthropic Claude API Key."
                     }
-                    onLog("[REST] Gửi Anthropic v1/messages stream...")
-                    val result = callAnthropicRestApi(key, prompt)
+                    val activeModel = modelName.ifBlank { "claude-3-5-sonnet-20241022" }
+                    onLog("[REST] Gửi Anthropic v1/messages stream (Model: $activeModel)...")
+                    val result = callAnthropicRestApi(key, activeModel, prompt)
                     onLog("[REST] Claude phản hồi thành công!")
                     return@withContext result
                 }
@@ -1991,8 +2044,9 @@ suspend fun executeAiRequest(
 }
 
 // REST Gemini
-suspend fun callGeminiRestApi(apiKey: String, prompt: String): String {
-    val url = URL("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$apiKey")
+suspend fun callGeminiRestApi(apiKey: String, model: String, prompt: String): String {
+    val activeModel = model.ifBlank { "gemini-1.5-flash" }
+    val url = URL("https://generativelanguage.googleapis.com/v1beta/models/$activeModel:generateContent?key=$apiKey")
     val conn = url.openConnection() as HttpURLConnection
     conn.requestMethod = "POST"
     conn.setRequestProperty("Content-Type", "application/json")
@@ -2037,7 +2091,7 @@ suspend fun callGeminiRestApi(apiKey: String, prompt: String): String {
 }
 
 // REST OpenAI
-suspend fun callOpenAiRestApi(apiKey: String, prompt: String, endpoint: String): String {
+suspend fun callOpenAiRestApi(apiKey: String, model: String, prompt: String, endpoint: String): String {
     val url = URL(endpoint)
     val conn = url.openConnection() as HttpURLConnection
     conn.requestMethod = "POST"
@@ -2048,7 +2102,7 @@ suspend fun callOpenAiRestApi(apiKey: String, prompt: String, endpoint: String):
     conn.doOutput = true
 
     val requestBody = JSONObject().apply {
-        put("model", "gpt-4o-mini")
+        put("model", model.ifBlank { "gpt-4o-mini" })
         put("messages", JSONArray().apply {
             put(JSONObject().apply {
                 put("role", "user")
@@ -2080,7 +2134,7 @@ suspend fun callOpenAiRestApi(apiKey: String, prompt: String, endpoint: String):
 }
 
 // REST Claude
-suspend fun callAnthropicRestApi(apiKey: String, prompt: String): String {
+suspend fun callAnthropicRestApi(apiKey: String, model: String, prompt: String): String {
     val url = URL("https://api.anthropic.com/v1/messages")
     val conn = url.openConnection() as HttpURLConnection
     conn.requestMethod = "POST"
@@ -2092,7 +2146,7 @@ suspend fun callAnthropicRestApi(apiKey: String, prompt: String): String {
     conn.doOutput = true
 
     val requestBody = JSONObject().apply {
-        put("model", "claude-3-5-sonnet-20241022")
+        put("model", model.ifBlank { "claude-3-5-sonnet-20241022" })
         put("max_tokens", 1024)
         put("messages", JSONArray().apply {
             put(JSONObject().apply {
