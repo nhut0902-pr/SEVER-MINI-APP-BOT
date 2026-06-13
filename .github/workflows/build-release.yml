@@ -39,19 +39,32 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug
-
-      - name: Set Release Name
+      - name: Determine Release Name and Version Constants
         id: release_name
         run: |
           if [[ "${{ github.event_name }}" == 'workflow_dispatch' ]]; then
-            echo "VERSION=${{ github.event.inputs.version_tag }}" >> $GITHUB_ENV
+            VERSION_TAG="${{ github.event.inputs.version_tag }}"
           elif [[ "${{ github.ref }}" == refs/tags/* ]]; then
-            echo "VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
+            VERSION_TAG="${{ github.ref_name }}"
           else
-            echo "VERSION=v1.0.${{ github.run_number }}" >> $GITHUB_ENV
+            VERSION_TAG="v1.0.${{ github.run_number }}"
           fi
+          
+          # Clean 'v' prefix for Gradle versionName (e.g. "1.0.8" instead of "v1.0.8")
+          VERSION_CLEAN=$(echo "$VERSION_TAG" | sed 's/^v//')
+          
+          # Use run_number plus 10 for versionCode
+          VERSION_CODE=$(( ${{ github.run_number }} + 10 ))
+          
+          echo "VERSION=$VERSION_TAG" >> $GITHUB_ENV
+          echo "VERSION_CLEAN=$VERSION_CLEAN" >> $GITHUB_ENV
+          echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_ENV
+
+      - name: Build Debug APK with Dynamic Version
+        env:
+          VERSION_NAME: ${{ env.VERSION_CLEAN }}
+          VERSION_CODE: ${{ env.VERSION_CODE }}
+        run: ./gradlew assembleDebug
 
       - name: Upload APK as Artifact
         uses: actions/upload-artifact@v4

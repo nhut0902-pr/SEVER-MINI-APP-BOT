@@ -10,12 +10,16 @@ android {
   namespace = "com.example"
   compileSdk { version = release(36) { minorApiLevel = 1 } }
 
+  val extVersionName = System.getenv("VERSION_NAME") ?: "1.0.9"
+  val extVersionCodeStr = System.getenv("VERSION_CODE") ?: "9"
+  val extVersionCode = extVersionCodeStr.toIntOrNull() ?: 9
+
   defaultConfig {
     applicationId = "com.aistudio.miniserver.pwyqzx"
     minSdk = 24
     targetSdk = 36
-    versionCode = 2
-    versionName = "1.0.1"
+    versionCode = extVersionCode
+    versionName = extVersionName
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }

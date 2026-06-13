@@ -23,6 +23,19 @@ object AppUpdater {
     private const val GITHUB_REPO = "nhut0902-pr/SEVER-MINI-APP-BOT" 
     private const val API_URL = "https://api.github.com/repos/$GITHUB_REPO/releases/latest"
 
+    private fun isNewerVersion(current: String, incoming: String): Boolean {
+        val currentParts = current.removePrefix("v").split(".").map { it.toIntOrNull() ?: 0 }
+        val incomingParts = incoming.removePrefix("v").split(".").map { it.toIntOrNull() ?: 0 }
+        val maxLen = maxOf(currentParts.size, incomingParts.size)
+        for (i in 0 until maxLen) {
+            val currVal = currentParts.getOrNull(i) ?: 0
+            val incVal = incomingParts.getOrNull(i) ?: 0
+            if (incVal > currVal) return true
+            if (incVal < currVal) return false
+        }
+        return false
+    }
+
     suspend fun checkForUpdate(currentVersion: String): UpdateInfo? = withContext(Dispatchers.IO) {
         try {
             val url = URL(API_URL)
@@ -39,7 +52,7 @@ object AppUpdater {
                 
                 val currentVersionClean = currentVersion.removePrefix("v")
                 
-                if (newVersion != currentVersionClean) {
+                if (isNewerVersion(currentVersionClean, newVersion)) {
                     val body = json.getString("body")
                     val assets = json.getJSONArray("assets")
                     if (assets.length() > 0) {

@@ -54,6 +54,7 @@ class ServerService : Service() {
     private var discordReconnectJob: Job? = null
     private var pythonProcess: Process? = null
     private var pythonProcessJob: Job? = null
+    private var isServiceInitialized = false
 
     companion object {
         private const val NOTIFICATION_ID = 2026
@@ -103,6 +104,13 @@ class ServerService : Service() {
         startForeground(NOTIFICATION_ID, notification)
 
         _isRunning.value = true
+
+        if (isServiceInitialized) {
+            // If already initialized, update status notification with the current URL port and skip redundant restart
+            updateNotification("Server is running on: ${_localIp.value}:${_port.value}")
+            return START_STICKY
+        }
+        isServiceInitialized = true
 
         // 1. Maintain CPU power via WakeLock safely on the Service main thread where package context is fully resolved
         if (wakeLock == null) {
@@ -253,6 +261,7 @@ class ServerService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         _isRunning.value = false
+        isServiceInitialized = false
         httpServer?.stop()
         telegramJob?.cancel()
         discordJob?.cancel()
@@ -801,6 +810,7 @@ class ServerService : Service() {
                         insertSystemLog("SYSTEM", "[Launcher]", "Bot Python dừng hoạt động. (Mã thoát: $exitVal)", if (exitVal == 0) 200 else 500)
                     }
                 } catch (e: Exception) {
+                    if (e is CancellationException) throw e
                     processStarted = false
                     errorMsg = e.localizedMessage ?: "Unknown launch exception"
                 }
@@ -823,6 +833,7 @@ class ServerService : Service() {
                     }
                 }
             } catch (e: Exception) {
+                if (e is CancellationException) throw e
                 e.printStackTrace()
                 val msg = e.localizedMessage ?: "Unknown error"
                 insertSystemLog("SYSTEM", "[Python Error]", "❌ Lỗi khởi chạy Bot: $msg", 500)
