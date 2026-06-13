@@ -32,6 +32,15 @@ android {
       keyAlias = System.getenv("KEY_ALIAS") ?: "upload"
       keyPassword = System.getenv("KEY_PASSWORD")
     }
+    getByName("debug") {
+      val keystorePath = "${rootDir}/debug.keystore"
+      if (file(keystorePath).exists()) {
+        storeFile = file(keystorePath)
+        storePassword = "android"
+        keyAlias = "androiddebugkey"
+        keyPassword = "android"
+      }
+    }
   }
 
   buildTypes {
