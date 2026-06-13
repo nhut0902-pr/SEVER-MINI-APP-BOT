@@ -53,6 +53,12 @@ jobs:
             echo "VERSION=v1.0.${{ github.run_number }}" >> $GITHUB_ENV
           fi
 
+      - name: Upload APK as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
+
       - name: Upload Release APK
         uses: softprops/action-gh-release@v1
         with:
@@ -62,6 +68,6 @@ jobs:
           body: |
             ## 🎉 Tính năng mới và Khắc phục lỗi trong ${{ env.VERSION }}
             
-            Vui lòng xem thông tin cập nhật chi tiết ở dưới.
+            Vui lòng tải tệp APK bên dưới để cài đặt bản cập nhật mới nhất.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
